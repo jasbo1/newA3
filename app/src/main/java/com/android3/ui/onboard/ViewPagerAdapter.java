@@ -1,8 +1,6 @@
-package com.android3.ui;
+package com.android3.ui.onboard;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,28 +10,32 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.PagerAdapter;
 
-import com.android3.App;
 import com.android3.R;
+import com.android3.data.entity.OnBoardEntity;
 import com.android3.ui.main.MainActivity;
-import com.android3.ui.onboard.OnBoardActivity;
+
+import java.util.ArrayList;
 
 
 public class ViewPagerAdapter extends PagerAdapter {
     private Context context;
-    private String[] name;
-    private int[] picture;
+    private ArrayList <OnBoardEntity> resourse;
 
-    public ViewPagerAdapter(Context context, String[] name,  int[] picture) {
-        this.context = context;
-        this.name = name;
-        this.picture = picture;
+
+
+    public ViewPagerAdapter(ArrayList<OnBoardEntity> resourse) {
+        this.resourse = resourse;
+
     }
+
+
 
     @Override
     public int getCount() {
-        return name.length;
+        return resourse.size();
     }
 
     @Override
@@ -43,24 +45,21 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @NonNull
     @Override
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull final ViewGroup container, int position) {
 
         TextView textView;
         ImageView avatarImageView;
         Button button;
+        View view =  LayoutInflater.from (container.getContext()).inflate(R.layout.item_view_pager,null);
 
 
-        LayoutInflater inflater = LayoutInflater.from (context);
+        avatarImageView = view.findViewById(R.id.imageViewAvatar);
+        textView = view.findViewById(R.id.textView1);
+        button = view.findViewById(R.id.button_1);
 
-        ViewGroup layout =(ViewGroup) inflater.inflate(R.layout.item_view_pager, container,   ////
-                false);
+        avatarImageView.setImageDrawable(container.getContext().getResources().getDrawable(resourse.get(position).getImg()));
+        textView.setText(resourse.get(position).getTitle());
 
-
-        avatarImageView = layout.findViewById(R.id.imageViewAvatar);
-        avatarImageView.setImageResource(picture[position]);
-        textView = layout.findViewById(R.id.textView1);
-        textView.setText(name[position]);
-        button = layout.findViewById(R.id.button_1);
 
         switch (position) {
             case 0:
@@ -74,20 +73,21 @@ public class ViewPagerAdapter extends PagerAdapter {
                 break;
             case 3:
                 button.setText("Начинать");
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MainActivity.start(container.getContext());
+                    }
+                });
                 break;
-           /* button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    MainActivity.start(this);
-
-                }});*/
         }
 
 
 
-        container.addView(layout);
-        return layout;
+        container.addView(view);
+        return view;
 
     }
 
